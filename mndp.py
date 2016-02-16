@@ -8,17 +8,17 @@ import sys
 def parse_mndp(data):
     entry = {}
     names = ('version', 'ttl', 'checksum')
-    for idx, val in enumerate(unpack('!BBH', data[:4])):
+    for idx, val in enumerate(unpack_from('!BBH', data)):
         entry[names[idx]] = val
 
     pos = 4
     while pos + 4 < len(data):
-        type, length = unpack('!HH', data[pos:pos+4])
+        type, length = unpack_from('!HH', data, pos)
         pos += 4
 
         # MAC
         if type == 1:
-            (mac,) = unpack('6s', data[pos:pos+6])
+            (mac,) = unpack_from('6s', data, pos)
             entry['mac'] = "%02x:%02x:%02x:%02x:%02x:%02x" % tuple(ord(x) for x in mac)
 
         # Identity
@@ -35,7 +35,7 @@ def parse_mndp(data):
 
         # uptime?
         elif type == 10:
-            (uptime,) = unpack('<I', data[pos:pos+4])
+            (uptime,) = unpack_from('<I', data, pos)
             entry['uptime'] = uptime
 
         # hardware
